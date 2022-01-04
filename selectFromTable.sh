@@ -222,7 +222,7 @@ function main
 	i=1
 
 	read -p "for spesific column(s) insert num of fields separated with - example(n-n / n-n-n): " f
-	fields=$f
+
 
 	if [[ $f = [1-$NF] ]]
 	then

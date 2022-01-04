@@ -1,0 +1,13 @@
+#!/bin/bash
+dbPATH=~/bash-project/databases
+PS3='>'
+select x in "Create Database" "List Databases" "Connect to Databases" "Drop Database"
+do 
+	case $x in
+		"Create Database") source ./createDB.sh;;
+		"List Databases") ls databases;;
+		"Connect to Databases") source ./connectToDB.sh;;
+		"Drop Database") ls;;
+	esac
+done
+

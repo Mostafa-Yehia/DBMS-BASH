@@ -1,7 +1,9 @@
 #!/bin/bash
 clear
+typeset -i firCol
 typeset -i v
 typeset -i ln
+typeset -i lnA
 typeset -i NF
 typeset -i i=1
 typeset -i y=3
@@ -14,7 +16,7 @@ field=""
 match=""
 viewer=""
 
-
+#############incomplete##############
 function viewSpecific
 {
 
@@ -33,7 +35,7 @@ do
 			rec="$rec-$buf"
 		fi
 	else
-		echo "invalid input, try again"
+		echo "ERROR: invalid input, try again"
 		validator
 	fi
 
@@ -47,25 +49,70 @@ do
 done
 
 }
+#############incomplete##############
 
 
-function validator
+function viewField
 {
 
 
+echo "search with: "
+
+while [[ $i -le $NF ]]
+do
+	echo "$i ) `echo $cl | cut -d: -f$i`"
+	i=$i+1
+done
+
+read c
 
 
+if [[ $c -ge 1 && $c -le $NF ]]
+then
+	col=`echo $cl | cut -d: -f$c`
+
+
+	read -p "keyword: " w
+
+	while [ $y -le $ln ]
+	do
+		match=`cat $tablePATH | head -$y | tail -1 | cut -d: -f$c`
+		if [[ $match = $w ]]
+		then
+			viewer=`cat $tablePATH | head -$y | tail -1 | cut -d: -f$f`
+			if [[ $firCol -eq 1 ]]
+			then
+				echo "`cat $tablePATH | head -2 | tail -1 | cut -d: -f$f`"
+				firCol=0
+			fi
+			echo $viewer
+			viw=$viw+1
+		fi
+		y=$y+1
+	done
+
+	if [ $viw -eq 0 ]
+	then
+		echo "ERROR: No match found, try again"
+		main
+	else
+		echo $viw "Record(s) matched"
+	fi
+else
+	echo "ERROR: invalid, try again"
+	viewField
+fi
 }
+
 
 
 function viewAll
 {
 
-	ln=`cat $tablePATH | wc -l`
-	ln=$ln-1
-	cat $tablePATH | tail -$ln
-	ln=$ln-1
-	echo $ln "Record(s) retreived successfully"
+	lnA=$ln-1
+	cat $tablePATH | tail -$lnA
+	lnA=$lnA-1
+	echo $lnA "Record(s) retreived successfully"
 
 }
 
@@ -80,7 +127,7 @@ function viewAll
 
 function viewRecord
 {
-
+	
 
 echo "search with: "
 
@@ -92,19 +139,12 @@ done
 
 read c
 
-if [[ $c -le 0 ]]
-then
-	echo "invalid, try again"
-	viewRecord
-fi
 
-if [[ $c -le $NF ]]
+if [[ $c -ge 1 && $c -le $NF ]]
 then
 	col=`echo $cl | cut -d: -f$c`
 
-	echo "keyword: "
-
-	read w
+	read -p "keyword: " w
 
 	while [ $y -le $ln ]
 	do
@@ -112,6 +152,11 @@ then
 		if [[ $match = $w ]]
 		then
 			viewer=`cat $tablePATH | head -$y | tail -1`
+			if [[ $firCol -eq 1 ]]
+			then
+				echo "`cat $tablePATH | head -2 | tail -1`"
+				firCol=0
+			fi
 			echo $viewer
 			viw=$viw+1
 		fi
@@ -120,10 +165,14 @@ then
 
 	if [ $viw -eq 0 ]
 	then
-		echo "no match found"
+		echo "ERROR: No match found, try again"
+		main
 	else
 		echo $viw "Record(s) matched"
 	fi
+else
+	echo "ERROR: invalid, try again"
+	viewRecord
 fi
 }
 
@@ -131,10 +180,11 @@ fi
 
 function main
 {
-
+	firCol=1
 	i=1
 	y=3
 	viw=0
+	ln=`cat $tablePATH | wc -l`
 
 	echo "which column(s) do you want to view ?"
 	while [ $i -le $NF ]
@@ -143,12 +193,11 @@ function main
 		i=$i+1
 	done
 		echo "- ) combination of columns"
-		echo "* ) all record"
+		echo "* ) all columns"
 		echo "# ) all table"
+	i=1
 
-	echo "for spesific column(s) insert num of fields separated with - example(n or n-n-n..)"
-
-	read f
+	read -p "for spesific column(s) insert num of fields separated with - example(n-n / n-n-n): " f
 	fields=$f
 
 	if [[ $f = "#" ]]
@@ -157,14 +206,14 @@ function main
 	elif [[ $f = "*" ]]
 	then
 		viewRecord
-	elif [[ $f = "-" ]]
+	elif [[ $f = "-" ]]	
 	then
 		viewSpesific
 	elif [[ $f = [1-$NF] ]]
 	then
-		validator
+		viewField
 	else
-		echo "invalid input, try agian"
+		echo "ERROR: invalid input, try agian"
 		main
 	fi
 
@@ -173,8 +222,7 @@ function main
 
 
 
-echo "enter table name"
-read tblName
+read -p "enter table name: " tblName
 tablePATH="$tblPATH/$tblName"
 if [ -f $tablePATH ]
 then   
@@ -187,8 +235,7 @@ then
 
 
 else
-	echo "No such table, enter any key to try again or x to exit"
-	read again
+	read -p "ERROR: No such table, enter any key to try again or x to exit: " again
 	if [[ $again != x ]]
 	then
 		source ./selectFromTable.sh

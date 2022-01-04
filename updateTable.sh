@@ -5,8 +5,7 @@ typeset -i j=1
 typeset -i k=0
 typeset -i matches=0
 typeset -i cont=1
-echo "enter table name"
-read tblName
+read -p "enter table name: " tblName
 while [ $cont -eq 1 ]
 do
 if [ -f $tblPATH/$tblName ]
@@ -17,17 +16,14 @@ then
 	n=`awk -F: 'END{print NF}' $tblPATH/$tblName`
 	typeset newRecord[$n]
     typeset oldRecord[$n]
-	echo "enter key to search with: "
-	read key
+	read -p "enter key to search with: " key
 	if [ $key -le $n ]
 	then
-		echo "enter value: "
-		read keyVal
+		read -p "enter value: " keyVal
 		matches=`cut -d: -f$key $tblPATH/$tblName | grep -c $keyVal` 
 		if [ $matches -ne 0 ]
 		then  
-			echo "enter key to update: "
-			read updatedCol
+			read -p "enter key to update: " updatedCol
 			updatedColDatatype=`cut -d: -f$updatedCol $tblPATH/$tblName | head -1`
 			if [[ $updatedColDatatype = serial ]]
 			then
@@ -35,30 +31,25 @@ then
 			else
 				if [ $updatedCol -le $n  ]
 				then
-					echo "enter new value to insert: "
-					read newVal
+					read -p "enter new value to insert: " newVal
 					PKmatch=`cut -d: -f1 $tblPATH/$tblName | grep "$newVal" | wc -l`
 					if [ $updatedCol -eq 1 -a $PKmatch -ne 0 ] 
 					then
 						echo "Duplicate entry ($newVal) for key ($tblName.PRIMARY)"
 					else	
-					    #y=($(awk -F: -v key=$key -v keyVal=$keyVal '{if($key==keyVal) {print $0}}' $tblPATH/$tblName))
-						#echo $y
 						#input validation
-						#oldRecord=($(awk -F: -v key=$key -v keyVal=$keyVal 'BEGIN{FS=":";RS="\n";OFS=":";}{if($key==keyVal) {print $0}}' $tblPATH/$tblName))
-						#newRecord=($(awk -F: -v key=$key -v keyVal="$keyVal" -v updatedCol=$updatedCol -v newVal="$newVal" 'BEGIN{FS=":";RS="\n";OFS=":";}gsub($updatedCol, newVal){if($key==keyVal) {print $0}}' $tblPATH/$tblName))
-						awk -F: -v key=$key -v keyVal=$keyVal -v updatedCol=$updatedCol -v newVal=$newVal -v path=$tblPATH/$tblName 'BEGIN{OFS=":"}gsub($updatedCol, newVal, $updatedCol){if($key==keyVal) { print $0 >> path }}' $tblPATH/$tblName
-						#j=${#newRecord[@]}
-						#echo $j
-						#while [ $k -lt $j ]
-						#do
-						#	sed -i "s/${oldRecord[$k]}/${newRecord[$k]}/g" $tblPATH/$tblName 
-						#	k=$k+1
-						#done	
-						#echo ${oldRecord[0]}
-						#echo ${#newRecord[@]}
-						#echo ${newRecord[0]}
-						#echo "Rows matched: $matches  Changed: "
+						oldRecord=$(awk -F: -v key=$key -v keyVal=$keyVal 'BEGIN{FS=":";RS="\n";OFS=":";ORS="|"}{if($key==keyVal) {print $0}}' $tblPATH/$tblName)
+						newRecord=$(awk -F: -v key=$key -v keyVal="$keyVal" -v updatedCol=$updatedCol -v newVal="$newVal" 'BEGIN{FS=":";RS="\n";OFS=":";ORS="|"}gsub($updatedCol, newVal){if($key==keyVal) {print $0}}' $tblPATH/$tblName)
+						#awk -F: -v key=$key -v keyVal=$keyVal -v updatedCol=$updatedCol -v newVal="$newVal" -v path=$tblPATH/$tblName 'BEGIN{OFS=":";} gsub($updatedCol, newVal, $updatedCol){if($key==keyVal){print $0 >> path }}' $tblPATH/$tblName
+						IFS='|'; arrOLD=($oldRecord); unset IFS;
+						IFS='|'; arrNEW=($newRecord); unset IFS;
+						j=${#arrOLD[@]}
+						while [ $k -lt $j ]
+						do
+							sed -i "s/${arrOLD[$k]}/${arrNEW[$k]}/g" $tblPATH/$tblName 
+							k=$k+1
+						done	
+						echo "Rows matched: $matches  Changed: "
 					fi	
 				else
 					echo "invalid Key"

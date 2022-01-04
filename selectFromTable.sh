@@ -2,12 +2,15 @@
 clear
 typeset -i firCol
 typeset -i v
+typeset -i n
+typeset -i validator
 typeset -i ln
 typeset -i lnA
 typeset -i NF
 typeset -i i=1
 typeset -i y=3
 typeset -i viw=0
+declare -a arr
 tablePATH=""
 cl=""
 col=""
@@ -16,40 +19,57 @@ field=""
 match=""
 viewer=""
 
-#############incomplete##############
+
 function viewSpecific
 {
 
-v=1
+v=1 #counter
 rec=""
 buf=""
-while [[ $v -eq 1 && $v -le $NF ]]
+
+gate=`echo $f | awk -F- 'END {print NF}'`
+if [[ $gate -gt $NF ]]
+then
+	echo "ERROR: invalid input [TOO MANY ARGUMENTS], try again"
+	main
+fi
+
+while [[ $v -ge 1 && $v -le $gate ]]
 do
-	validator=`echo $f | cut -d- f$v`
-	if [[ $validator -ge 1 && $validator -le $NF ]]
+	validator=`echo $f | cut -d- -f$v`
+	if [[ $validator -ge 1 && $validator -le $gate ]]
 	then
+		buf=$validator
 		if [[ $v -eq 1 ]]
 		then
 			rec=$buf
 		else
 			rec="$rec-$buf"
 		fi
+
+		for o in "${arr[@]}"
+		do
+			if [[ $o -eq $buf ]]
+			then
+				echo "ERROR: invalid input [REPEATED FIELD(S)], try again"
+				main
+			fi
+		done
+		arr[$v]=$buf
+
 	else
-		echo "ERROR: invalid input, try again"
-		validator
+		echo "ERROR: invalid input [NO SUCH FIELD(S)], try again"
+		main
 	fi
-
-	v=$v+1
 	
-	if [[ $v -gt $NF ]]
-	then
-		viewSpecific
-	fi
-
+	v=$v+1
 done
 
+fields=rec
+viewCombination
+
 }
-#############incomplete##############
+
 
 
 function viewField
@@ -116,12 +136,13 @@ function viewAll
 
 }
 
-
-#function viewSpesific
-#{
-
-##}
-
+#############incomplete##############
+function viewCombination
+{
+	##A string variable called $fields holds user input after validation (example: 3-5-2-4)
+	##Viewer code goes here##
+}
+#############incomplete##############
 
 
 
@@ -180,6 +201,9 @@ fi
 
 function main
 {
+	arr=()
+	rec=""
+	buf=""
 	firCol=1
 	i=1
 	y=3
@@ -200,22 +224,30 @@ function main
 	read -p "for spesific column(s) insert num of fields separated with - example(n-n / n-n-n): " f
 	fields=$f
 
-	if [[ $f = "#" ]]
+	if [[ $f = [1-$NF] ]]
+	then
+		viewField
+	elif [[ $f = "#" ]]
 	then
 		viewAll
 	elif [[ $f = "*" ]]
 	then
 		viewRecord
-	elif [[ $f = "-" ]]	
+	elif [[ $f = +([1-$NF]*"-"[1-$NF]) ]]	
 	then
-		viewSpesific
-	elif [[ $f = [1-$NF] ]]
-	then
-		viewField
+		viewSpecific
 	else
-		echo "ERROR: invalid input, try agian"
+		echo "ERROR: invalid input [NO SUCH FIELD(S)], try again"
 		main
 	fi
+
+	read -p "Enter any key to select new data or x to exit: " reselect
+	if [[ $reselect != x ]]
+	then
+		main
+	else
+		source ./menu
+		fi
 
 }
 

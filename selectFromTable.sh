@@ -65,7 +65,7 @@ do
 	v=$v+1
 done
 
-fields=rec
+fields=$rec
 viewCombination
 
 }

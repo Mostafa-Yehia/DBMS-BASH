@@ -13,14 +13,15 @@ then
 	echo "update $tblName using:"
     awk -F: 'BEGIN{i=1;str=""}{if (NR==2){while(i<=NF){str=i") "$i;print str;i++;}}}' $tblPATH/$tblName
 	#awk -F: 'BEGIN{printf "enter key to search with: ";getline key<"-";printf "enter value: ";getline keyVal<"-";printf "enter key to update: ";getline updatedCol<"-";printf "enter new value to insert: ";getline newVal<"-";} (NR==1){updatedColDatatype=$updatedCol} gsub($updatedCol, newVal){if($key==keyVal) {str=$0}}(updatedColDatatype="text") {print str}' $tblPATH/$tblName 
-	n=`awk -F: 'END{print NF}' $tblPATH/$tblName`
-	typeset newRecord[$n]
-    typeset oldRecord[$n]
+	n=`awk -F: '{if(NR==1){print NF}}' $tblPATH/$tblName`
+	typeset newRecord=""
+    typeset oldRecord=""
 	read -p "enter key to search with: " key
+	echo $n
 	if [ $key -le $n ]
 	then
 		read -p "enter value: " keyVal
-		matches=`cut -d: -f$key $tblPATH/$tblName | grep -c $keyVal` 
+		matches=`cut -d: -f$key $tblPATH/$tblName | grep -c "$keyVal"` 
 		if [ $matches -ne 0 ]
 		then  
 			read -p "enter key to update: " updatedCol
@@ -38,13 +39,16 @@ then
 						echo "Duplicate entry ($newVal) for key ($tblName.PRIMARY)"
 					else	
 						#input validation
-						oldRecord=$(awk -F: -v key=$key -v keyVal=$keyVal 'BEGIN{FS=":";RS="\n";OFS=":";ORS="|"}{if($key==keyVal) {print $0}}' $tblPATH/$tblName)
-						newRecord=$(awk -F: -v key=$key -v keyVal="$keyVal" -v updatedCol=$updatedCol -v newVal="$newVal" 'BEGIN{FS=":";RS="\n";OFS=":";ORS="|"}gsub($updatedCol, newVal){if($key==keyVal) {print $0}}' $tblPATH/$tblName)
+						oldRecord=$(awk -F: -v key=$key -v keyVal="$keyVal" 'BEGIN{FS=":";RS="\n";OFS=":";ORS="|"}{if($key==keyVal) {print $0}}' $tblPATH/$tblName)
+						newRecord=$(awk -F: -v key=$key -v keyVal="$keyVal" -v updatedCol=$updatedCol -v newVal="$newVal" 'BEGIN{FS=":";RS="\n";OFS=":";ORS="|"}gsub($updatedCol, newVal , $updatedCol){if($key==keyVal) {print $0}}' $tblPATH/$tblName)
+						echo $oldRecord
+						echo $newRecord
+						#echo $newVal
 						#awk -F: -v key=$key -v keyVal=$keyVal -v updatedCol=$updatedCol -v newVal="$newVal" -v path=$tblPATH/$tblName 'BEGIN{OFS=":";} gsub($updatedCol, newVal, $updatedCol){if($key==keyVal){print $0 >> path }}' $tblPATH/$tblName
 						IFS='|'; arrOLD=($oldRecord); unset IFS;
 						IFS='|'; arrNEW=($newRecord); unset IFS;
 						j=${#arrOLD[@]}
-						while [ $k -lt $j ]
+						while [[ $k -lt $j && $newRecord != "" ]]
 						do
 							sed -i "s/${arrOLD[$k]}/${arrNEW[$k]}/g" $tblPATH/$tblName 
 							k=$k+1

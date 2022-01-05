@@ -1,7 +1,11 @@
 #!/bin/bash
+typeset -i FLAG=$1
+if [ $FLAG -ne 1 ]
+then
 clear
 echo "enter DB name"
 read DB
+fi
 if [ -d $dbPATH/$DB ]
 then
 tblPATH=$dbPATH/$DB
@@ -11,7 +15,7 @@ do
         "Create Table") 
 		source ./createTable.sh
             ;;
-		"Drop Table") source ./dropTable.sh
+		"Drop Table") source ./dropTBL.sh
 			;;
 		"Insert into Table") source ./insertToTable.sh
 			;;

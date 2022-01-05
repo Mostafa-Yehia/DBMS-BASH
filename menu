@@ -1,13 +1,25 @@
 #!/bin/bash
-dbPATH=~/bash-project/databases
+typeset -i auth=$authenticated
+if [ $auth -eq 0 ]
+then
+	clear
+	source ./authenticate.sh
+else
+clear
+echo " "
+echo " "
+echo "        Welcome to the NOURAN_MOSTAFA_DB "
+echo " "
+echo " "
+dbPATH=~/bash-project-github/databases
 PS3='>'
 select x in "Create Database" "List Databases" "Connect to Databases" "Drop Database"
 do 
 	case $x in
 		"Create Database") source ./createDB.sh;;
-		"List Databases") ls databases;;
+		"List Databases") source ./listDB.sh;;
 		"Connect to Databases") source ./connectToDB.sh;;
-		"Drop Database") ls;;
+		"Drop Database") source ./dropDB.sh;;
 	esac
 done
-
+fi

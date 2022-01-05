@@ -1,0 +1,57 @@
+if (serial)
+......
+else
+if (int)
+....
+elif(text)
+.....
+fi
+fi
+
+
+awk -F: 'BEGIN{i=1;str=""}{if (NR==2){while(i<=NF){str=i") "$i;print str;i++;}}}END{print NF}' databases/iti/sub
+
+
+
+
+
+echo enter key to search with
+    read x
+    if [ $x -le $n ]
+	then
+		echo "enter key value"
+        read value
+		matches=`cut -d: -f$x $tblPATH/$tblName | grep value | wc -l`
+		k=$matches
+		if test $matches -ne 0
+		then 
+			echo "which column to update"
+			awk -F: 
+			'BEGIN{i=1;str=""}
+			{
+				if (NR==2){
+					while(i<=NF){
+					str=i") "$i;
+					print str;
+					i++;
+					}
+				}
+
+		    }' $tblPATH/$tblName
+			read $x
+			echo "enter new value"
+		    read newVal
+			while [ $j -le $matches ]
+			do
+				record=`grep $value $tblPATH/$tblName | head -$j | tail -$k`
+				matchedCol=`echo $record | cut -d: -f$x`
+				if [ $matchedCol == $value ]
+				then
+				sed -n 's/$value'
+				i=$i+1
+				k=$k-1
+			done		
+	else
+		echo "Not an option"
+	fi
+

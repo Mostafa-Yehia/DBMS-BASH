@@ -140,6 +140,7 @@ function viewAll
 function viewCombination
 {
 	##A string variable called $fields holds user input after validation (example: 3-5-2-4)
+	echo "working"
 	##Viewer code goes here##
 }
 #############incomplete##############
@@ -224,22 +225,22 @@ function main
 	read -p "for spesific column(s) insert num of fields separated with - example(n-n / n-n-n): " f
 
 
-	if [[ $f = [1-$NF] ]]
-	then
-		viewField
-	elif [[ $f = "#" ]]
-	then
-		viewAll
-	elif [[ $f = "*" ]]
-	then
-		viewRecord
-	elif [[ $f = +([1-$NF]*"-"[1-$NF]) ]]	
-	then
+	#if [[ $f = [1-$NF] ]]
+	#then
+	#	viewField
+	#elif [[ $f = "#" ]]
+	##then
+	#	viewAll
+	#elif [[ $f = "*" ]]
+	#then
+	#	viewRecord
+	#elif [[ $f = +([1-$NF]*"-"[1-$NF]) ]]	
+	#then
 		viewSpecific
-	else
-		echo "ERROR: invalid input [NO SUCH FIELD(S)], try again"
-		main
-	fi
+	#else
+	#	echo "ERROR: invalid input [NO SUCH FIELD(S)], try again"
+	#	main
+	#fi
 
 	read -p "Enter any key to select new data or x to exit: " reselect
 	if [[ $reselect != x ]]

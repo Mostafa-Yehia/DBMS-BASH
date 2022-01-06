@@ -79,7 +79,6 @@ viewCombination
 }
 
 
-
 function viewField
 {
 

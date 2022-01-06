@@ -16,7 +16,5 @@ authenticated=$(awk -F: -v user=$user -v password=$password '{if($1==user && $2=
 if [ $authenticated -eq 0 ]
 then
 	echo "Authentication Faliure"
-	pkill "./menu"
-else
-	source ./menu
 fi
+source ./menu

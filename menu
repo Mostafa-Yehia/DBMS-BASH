@@ -1,25 +1,45 @@
 #!/bin/bash
+clear
 typeset -i auth=$authenticated
 if [ $auth -eq 0 ]
 then
-	clear
-	source ./authenticate.sh
+echo "_-_-_-     NOURAN_MOSTAFA_DB V1.0     -_-_-_"
+	echo "_-_-_-_-_-_-     1) Login     -_-_-_-_-_"
+	echo "_-_-_-_-_-_-     2) Exit      -_-_-_-_-_"
+	read auth
+	if [[ $auth -eq 1 ]]
+	then
+		clear
+		source ./authenticate.sh
+	elif [[ $auth -eq 2 ]]
+	then
+		exit
+	else
+		echo "invalid input, try again"
+		source ./menu
+	fi
 else
 clear
+echo "Welcome, $user"
 echo " "
 echo " "
-echo "        Welcome to the NOURAN_MOSTAFA_DB "
+echo " "
+echo ""
+echo "                       NOURAN_MOSTAFA_DB "
 echo " "
 echo " "
 dbsPATH=~/bash-project-github/databases
 PS3='>'
-select x in "Create Database" "List Databases" "Connect to Databases" "Drop Database" "Exit"
+select x in "Create Database" "List Databases" "Connect to Databases" "Drop Database" "Log out" "Exit"
 do 
 	case $x in
 		"Create Database") source ./createDB.sh;;
 		"List Databases") source ./listDB.sh;;
 		"Connect to Databases") source ./connectToDB.sh 0;;
 		"Drop Database") source ./dropDB.sh;;
+		"Log out")
+		authenticated=0
+		source ./menu;;
 		"Exit") exit;;
 		*) echo "ERROR: invalid input, try again"
 	esac

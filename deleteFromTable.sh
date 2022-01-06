@@ -6,7 +6,7 @@ typeset -i NF
 typeset -i i
 typeset -i y
 typeset -i rmv
-tablePATH=""
+tblPATH=""
 cl=""
 col=""
 match=""
@@ -15,14 +15,16 @@ deleter=""
 
 function deleteAll
 {
-	sed -i '3,$ d' $tablePATH
+
+	rmv=`cat $tblPATH | wc -l`
+	sed -i '3,$ d' $tblPATH
 }
 
 
 function delete
 {
-	deleter=`cat $tablePATH | head -$y | tail -1`
-	sed -i '/'"$deleter"'/d' $tablePATH
+	deleter=`cat $tblPATH | head -$y | tail -1`
+	sed -i '/'"$deleter"'/d' $tblPATH
 }
 
 
@@ -36,7 +38,7 @@ read -p "insert the match value: " w
 #######begin counter#######
 while [ $y -le $ln ]
 do
-	match=`cat $tablePATH | head -$y | tail -1 | cut -d: -f$c`
+	match=`cat $tblPATH | head -$y | tail -1 | cut -d: -f$c`
 	if [[ $match = $w ]]
 	then
 		rmv=$rmv+1
@@ -48,7 +50,7 @@ y=3
 
 while [ $y -le $ln ]
 do
-	match=`cat $tablePATH | head -$y | tail -1 | cut -d: -f$c`
+	match=`cat $tblPATH | head -$y | tail -1 | cut -d: -f$c`
 	if [[ $match = $w ]]
 	then
 		delete
@@ -80,7 +82,7 @@ function main
 	if [[ $c = "*" ]]
 	then
 		deleteAll
-		dltd=$ln-2
+		dltd=$rmv-2
 		echo $dltd "Record(s) deleted successfully"
 
 	elif [[ $c -le $NF && $c -gt 0 ]]
@@ -100,37 +102,34 @@ function main
 		main
 	fi
 
-	read -p "Enter any key to delete new record or x to exit: " redelete
+	read -p "Enter any key to delete new record or x to Back: " redelete
 	if [[ $redelete != x ]]
 	then
 		main
 	else
-		source ./menu
+		source ./connectToDB.sh 1
 	fi
 
 }
 
-
-
-
 read -p "enter table name: " tblName
-tablePATH="$tblPATH/$tblName"
-if [ -f $tablePATH ]
+tblPATH="$dbPATH/$tblName"
+if [ -f $tblPATH ]
 then  
  
-	cl=`cat $tablePATH | head -2 | tail -1`
-	ln=`cat $tablePATH | wc -l`
-	NF=`awk -F: 'END{print NF}' $tablePATH`
+	cl=`cat $tblPATH | head -2 | tail -1`
+	ln=`cat $tblPATH | wc -l`
+	NF=`awk -F: 'END{print NF}' $tblPATH`
 	
 	main
 
 
 else 
-	read -p "ERROR: No such table, enter any key to try again or x to exit: " again
+	read -p "ERROR: No such table, enter any key to try again or x to Back: " again
 	if [[ $again != x ]]
 	then
 		source ./deleteFromTable.sh
 	else
-		source ./menu
+		source ./connectToDB.sh 1
 	fi
 fi 

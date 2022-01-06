@@ -1,42 +1,44 @@
 #!/bin/bash
 typeset -i FLAG=$1
-if [ $FLAG -ne 1 ]
+if [[ $FLAG -ne 1 ]]
 then
-clear
-echo "enter DB name"
-read DB
+	clear
+	read -p "enter DB name: " DB
 fi
-if [ -d $dbPATH/$DB ]
+
+if [ -d $dbsPATH/$DB ]
 then
-tblPATH=$dbPATH/$DB
-select x in "Create Table" "Drop Table" "Insert into Table" "Select From Table" "Delete From Table" "Update Table" "List Tables" "Exit"
+dbPATH=$dbsPATH/$DB
+select x in "Create Table" "Drop Table" "Insert into Table" "Select From Table" "Delete From Table" "Update Table" "List Tables" "Back"
 do
 	case $x in
-        "Create Table") 
-		source ./createTable.sh
-            ;;
+        	"Create Table") source ./createTable.sh
+            		;;
 		"Drop Table") source ./dropTBL.sh
 			;;
 		"Insert into Table") source ./insertToTable.sh
 			;;
 		"Select From Table") source ./selectFromTable.sh
 			;;
-		"Delete From Table")
+		"Delete From Table") source ./deleteFromTable.sh
 			;;
 		"Update Table") source ./updateTable.sh
 			;;
-        "List Tables") ls $dbPATH/$DB
+        	"List Tables") source ./listTbl.sh
 			;;
-        "Exit") source ./menu
-            ;;
-        *) echo "Not an Option"
-		    ;;
+        	"Back") source ./menu
+			;;
+		*) echo "ERROR: invalid input, try again"
+			;;
 	esac
 done
 else
-	echo "No such database"
-	sleep 2
-	source ./connectToDB.sh
+	echo "ERROR: No such database, enter any key to try again or x to Back"
+	read reconnect
+	if [[ $reconnect != x ]]
+	then
+		source ./connectToDB.sh
+	else
+		source ./menu
+	fi
 fi
-
-

@@ -2,17 +2,17 @@
 clear
 typeset -i backFlag=1
 read -p "enter table name: " tblName
-if [ -f $tblPATH/$tblName ]
+if [ -f $dbPATH/$tblName ]
 then
 	read -p "Are you sure you want to delete $tblName table (y/n): " x
-    if [[ $x == 'y' || $x == 'Y' ]]
-    then	       
-		rm $tblPATH/$tblName
+	if [[ $x == 'y' || $x == 'Y' ]]
+	then	       
+		rm $dbPATH/$tblName
 		echo "Table Successfully deleted"
 	else 
 		source ./dropTBL.sh
-	fi	
+	fi
 else
-	echo "No Such File"
+	echo "ERROR: No Such File"
 fi
-source ./connectToDB.sh $backFlag
+source ./connectToDB.sh 1

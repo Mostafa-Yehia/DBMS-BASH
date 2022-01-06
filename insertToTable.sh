@@ -6,7 +6,7 @@ typeset -i NF
 typeset -i lnt
 typeset -i lni
 typeset -i i=1
-tablePATH=""
+tblPATH=""
 dt=""
 cl=""
 dty=""
@@ -14,19 +14,17 @@ col=""
 buffer=""
 record=""
 
-
-
 function constraints
 
 {
 
 lni=3
-lnt=`cat $tablePATH | wc -l`
+lnt=`cat $tblPATH | wc -l`
 
 while [[ $lni -le $lnt ]]
 do
 
-	matcher=`cat $tablePATH | head -$lni | tail -1 | cut -d: -f$i`
+	matcher=`cat $tblPATH | head -$lni | tail -1 | cut -d: -f$i`
 
 	if [[ $x = "" ]]
 	then
@@ -54,7 +52,7 @@ function insert
 if [[ $dty == serial ]]
 then
 
-	serial=`cat $tablePATH | tail -1 | cut -d: -f$i`
+	serial=`cat $tblPATH | tail -1 | cut -d: -f$i`
 	if [[ $serial = +([0-9]) ]]
 	then
 		serial=$serial+1
@@ -153,14 +151,14 @@ function main
 	fi
 	i=$i+1
 	done
-	echo $record >> $tablePATH
+	echo $record >> $tblPATH
 	echo "Record inserted successfully"
-	read -p "Enter any key to insert new record or x to exit: " reinsert
+	read -p "Enter any key to insert new record or x to Back: " reinsert
 	if [[ $reinsert != x ]]
 	then
 		main
 	else
-		source ./menu
+		source ./connectToDB.sh 1
 	fi
 
 
@@ -169,23 +167,23 @@ function main
 
 
 read -p "enter table name: " tblName
-tablePATH="$tblPATH/$tblName"
-if [ -f $tablePATH ]
+tblPATH="$dbPATH/$tblName"
+if [ -f $tblPATH ]
 then
 
 
-	dt=`cat $tablePATH | head -1`
-	cl=`cat $tablePATH | head -2 | tail -1`
-	NF=`awk -F: 'END{print NF}' $tablePATH`
+	dt=`cat $tblPATH | head -1`
+	cl=`cat $tblPATH | head -2 | tail -1`
+	NF=`awk -F: 'END{print NF}' $tblPATH`
 
 	main
 
 else
-	read -p "ERROR: No such table, enter any key to try again or x to exit: " again
+	read -p "ERROR: No such table, enter any key to try again or x to Back: " again
 	if [[ $again != x ]]
 	then
 		source ./insertToTable.sh
 	else
-		source ./menu
+		source ./connectToDB.sh 1
 	fi
 fi 

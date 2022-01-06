@@ -11,15 +11,17 @@ echo " "
 echo "        Welcome to the NOURAN_MOSTAFA_DB "
 echo " "
 echo " "
-dbPATH=~/bash-project-github/databases
+dbsPATH=~/bash-project-github/databases
 PS3='>'
-select x in "Create Database" "List Databases" "Connect to Databases" "Drop Database"
+select x in "Create Database" "List Databases" "Connect to Databases" "Drop Database" "Exit"
 do 
 	case $x in
 		"Create Database") source ./createDB.sh;;
 		"List Databases") source ./listDB.sh;;
-		"Connect to Databases") source ./connectToDB.sh;;
+		"Connect to Databases") source ./connectToDB.sh 0;;
 		"Drop Database") source ./dropDB.sh;;
+		"Exit") exit;;
+		*) echo "ERROR: invalid input, try again"
 	esac
 done
 fi

@@ -1,37 +1,54 @@
 #!/bin/bash
 clear
-echo "enter database name: " 
-read DBdir
-if [[ $DBdir != +([a-zA-Z]*[a-zA-Z0-9_]) ]]  
+typeset -i errorType=0
+errorType=0
+function errorHandler
+{
+if [[ $errorType -eq 1 ]]
 then
-    echo "database name can not contain numbers nor special characters"
-	sleep 2
-	source ./createDB.sh
-elif [[ $DBdir == *" "* ]]
+	read -p "ERROR: database name can NOT contain numbers nor special characters, enter any key to try again or x to Back" recreate
+elif [[ $errorType -eq 2 ]]
 then
-	echo "database name can not contain spaces"
-	sleep 2
+	read -p "ERROR: database name can not contain spaces, enter any key to try again or x to Back" recreate
+elif [[ $errorType -eq 3 ]]
+then
+	read -p "ERROR: database already exists, enter any key to try again or x to Back" recreate
+fi
+if [[ $recreate != x ]]
+then
 	source ./createDB.sh
+else
+	source ./menu
+fi
+}
+read -p "enter database name: " DB
+if [[ $DB != +([a-zA-Z]*[a-zA-Z0-9_]) ]]  
+then
+	errorType=1
+	errorHandler
+elif [[ $DB == *" "* ]]
+then
+	errorType=2
+	errorHandler
 else		
-	if [ -d $dbPATH/$DBdir ]
+	if [ -d $dbsPATH/$DB ]
 	then
-		echo "Database already exists"
-		echo "press any key to try again"
-		read 
-		source ./createDB.sh
+		errorType=3
+		errorHandler
 	else
-		mkdir $dbPATH/$DBdir
-		tblPATH=$dbPATH/$DBdir
-		select x in "Create Table" "Exit"
+		mkdir $dbsPATH/$DB
+		dbPATH=$dbsPATH/$DB
+		echo "database $DB was created successfully"
+		select x in "Create Table" "Back"
 		do
 			case $x in 
 				"Create Table") source ./createTable.sh
-				;;
-				"Exit") source ./menu
-				;;
-				*) echo "Not an Option";;
+					;;
+				"Back") source ./menu
+					;;
+				*) echo "ERROR: invalid input, try again"
+					;;
 			esac
 		done
 	fi
 fi
-

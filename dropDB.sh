@@ -1,19 +1,19 @@
 #!/bin/bash
 clear
-read -p "enter database name: " DBdir
-if [ -d $dbPATH/$DBdir ]
+read -p "enter database name: " DB
+if [ -d $dbsPATH/$DB ]
 then
-	rm -r $dbPATH/$DBdir
+	rm -r $dbsPATH/$DB
 	echo "Database Successfully deleted"
 else
-	echo "No Such Database"
+	echo "ERROR: No Such Database"
 fi
-select x in "Drop DataBase" "Exit"
+select x in "Drop DataBase" "Back"
 do
 	case $x in
 		"Drop DataBase") source ./dropDB.sh
 				;;
-		"Exit") source ./menu
+		"Back") source ./menu
 				;;
 		*) echo "Not an Option";;
 	esac
